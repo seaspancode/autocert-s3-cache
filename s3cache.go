@@ -13,6 +13,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
@@ -39,11 +40,8 @@ type Cache struct {
 
 // New creates an s3 instance that can be used with autocert.Cache.
 // It returns any errors that could happen while connecting to S3.
-func New(region, bucket string) (*Cache, error) {
-	sess, err := session.NewSession(&aws.Config{
-		CredentialsChainVerboseErrors: aws.Bool(true),
-		Region: aws.String(region),
-	})
+func New(region, bucket, ID, key string) (*Cache, error) {
+	sess, err := session.NewSession(aws.NewConfig().WithRegion(region).WithCredentials(credentials.NewStaticCredentials(ID, key, "")))
 	if err != nil {
 		return nil, err
 	}
